@@ -141,7 +141,8 @@ $(document).ready(function() {
                         "/page/:page": function(page) {this.go(page);},
                         "/tags": function() {this.tags();},
                         "/tag/:tag": function(param) {this.tag(param);},
-                        "/archive": function() {this.archive();}
+                        "/archive": function() {this.archive();},
+                        "/about": function() {this.about();}
                     });
                     Spine.Route.setup();
                 },
@@ -221,6 +222,9 @@ $(document).ready(function() {
                     var tmpTemplate = Hogan.compile($("#archiveTemplate").html());
                     var tmpHtml = tmpTemplate.render({"group": group});
                     $("#main").html(tmpHtml);
+                },
+                about: function() {
+                    $("#main").html(hello.html);
                 }
             });
             new App();
