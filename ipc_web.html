@@ -1,0 +1,273 @@
+<!DOCTYPE HTML>
+<html>
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+    <meta name="Keywords" content="blog"/>
+    <meta name="Description" content="blog"/>
+    <title>Simple</title>
+    <link rel="shortcut icon" href="/static/favicon.png"/>
+    <link rel="stylesheet" type="text/css" href="/main.css" />
+</head>
+<body>
+<div class="main">
+    <div class="header">
+    	<ul id="pages">
+            <li><a href="/">home</a></li>
+            <li><a href="/#/tags">tags</a></li>
+            <li><a href="/#/archive">archive</a></li>
+    	</ul>
+    </div>
+	<div class="wrap-header">
+	<h1>
+    <a href="/" id="title"></a>
+	</h1>
+	</div>
+<div id="md" style="display: none;">
+<!-- markdown -->
+                         IPC web端简易自动化测试框架
+
+1	 开发背景
+
+近期组内在进行黑盒自动化的方面的探索，利用空闲时间用python编写了一个基于selenium的小框架，可测试公司的IPC web上的功能。
+
+2	框架介绍
+
+2.1	Python重要模块介绍
+
+2.1.1	Selenium
+
+一个web自动化测试工具，免费，小巧，支持多平台及浏览器，python中有现成的selenium包，可以安装后在代码中直接导入（import）该模块。
+
+2.1.2	Unittest
+
+unittest是python的一个单元测试模块。一个TestCase的实例是一个测试用例，也就是一个完整的测试流程，通过执行这个测试单元，可以对某一个问题进行验证；多个测试用例集合在一起，就是TestSuite；TestLoader加载TestCase到TestSuite中；TextTestRunner执行测试用例；测试的结果会保存到TextTestResult实例中，包括运行了多少用例，成功了多少，失败了多少。本文开发的框架选用unittest模块进行用例的编写和执行。
+
+2.2	框架介绍
+  
+                        图表 1 简易自动化测试框架
+该自动化测试框架是基于python2.7开发的。主要包括五个模块：
+全局模块：定义IPC类，类中定义全局变量及测试用例执行需要调用的方法函数；
+测试用例编写模块：TestCases目录下被测对象的每个功能模块用例编写在单个python脚本中，脚本以test_xx.py命名；
+测试用例管理模块：Test_case_info.py定义了测试用例信息类；测试用例管理通过Testcases.txt来记录测试脚本（test_xx.py），如果不需要再本次执行，则在测试脚本前面添加一个“#”标识符来跳过该脚本中用例的执行，例如下图所示：
+ 
+                        图表 2 测试用例管理文件
+
+测试报告生成模式：实现测试报告生成形式等；
+测试用例执行及邮件发送模块：定义RunTests类，类中实现执行用例和发送邮件方法；创建RunTests实例，执行用例并将测试结果发送邮件给指定收件人。最终邮件结果如图所示：
+ 
+                       图表 3 测试结果邮件反馈图
+3	框架实现
+
+3.1	工程结构
+
+    |-IPC_test----------------------------项目名称
+        |-TestCases/---------测试用例编写目录，保存所有模块测试用例
+            |-test_isp.py-------------------isp功能测试用例
+            |-test_login.py----------------登录功能测试用例
+            |-test_xxx.py -----------------xxx功能测试用例
+        |-IPC_login.py/------------------全局模块
+        |-test_case_info.py-------------测试用例信息类
+        |-test_report.py------------------测试报告生成模块
+        |-testcases.txt--------------------测试用例管理文件
+        |-TestResult.html-----------------执行后生成的结果文件
+    |-run.py-------------------------启动脚本，执行用例并发送邮件
+
+3.2	代码交流
+
+目前只完成了框架的基本功能，用例只实现了IPC设备的web上登录功能，现以test_login为例，简单介绍下框架各个模块的主要代码。
+
+全局模块：IPC_login.py
+
+ 
+    图表 4 IPC_login.py
+定义IPC类，类中初始化实例，并定义login方法。
+
+测试用例编写模块：TestCase/test_login.py
+ 
+    图表 5 TestCase/test_login.py
+测试用例必须以“test_”开始，测试执行时会自动搜索所有以“test_”的函数并执行。35行用assertEqual断言进行判断验证测试结果。
+
+测试用例执行和邮件发送模块：run.py
+ 
+    图表 6 run.py
+定义了LoadAndRunTestCases方法，读取testcases.txt文件中未被“#”注释掉的用例脚本名称，用nosetests逐个执行。
+ 
+    图表 7 run.py
+定义了邮件发送方法。
+ 
+    图表 8 run.py
+Main函数中定义了RunTests实例，调用执行测试用例方法，接着调用发送邮件方法。
+
+4	总结
+
+利用空闲时间，实现了一个基于selenium的web端简易自动化测试框架，可实现测试用例有序管理、有序执行，并生成测试结果报告，发送邮件。功能较简单，考虑IPC web端功能的测试并不是系统部测试组的工作重点，暂不做进一步完善和优化。待后续有该方面的需求，再做进一步开发。
+
+<!-- markdown end -->
+</div>
+<div class="entry" id="main">
+<!-- content -->
+<pre><code>                     IPC web端简易自动化测试框架
+</code></pre>
+
+<p>1     开发背景</p>
+
+<p>近期组内在进行黑盒自动化的方面的探索，利用空闲时间用python编写了一个基于selenium的小框架，可测试公司的IPC web上的功能。</p>
+
+<p>2    框架介绍</p>
+
+<p>2.1    Python重要模块介绍</p>
+
+<p>2.1.1    Selenium</p>
+
+<p>一个web自动化测试工具，免费，小巧，支持多平台及浏览器，python中有现成的selenium包，可以安装后在代码中直接导入（import）该模块。</p>
+
+<p>2.1.2    Unittest</p>
+
+<p>unittest是python的一个单元测试模块。一个TestCase的实例是一个测试用例，也就是一个完整的测试流程，通过执行这个测试单元，可以对某一个问题进行验证；多个测试用例集合在一起，就是TestSuite；TestLoader加载TestCase到TestSuite中；TextTestRunner执行测试用例；测试的结果会保存到TextTestResult实例中，包括运行了多少用例，成功了多少，失败了多少。本文开发的框架选用unittest模块进行用例的编写和执行。</p>
+
+<p>2.2    框架介绍</p>
+
+<pre><code>                    图表 1 简易自动化测试框架
+</code></pre>
+
+<p>该自动化测试框架是基于python2.7开发的。主要包括五个模块：
+全局模块：定义IPC类，类中定义全局变量及测试用例执行需要调用的方法函数；
+测试用例编写模块：TestCases目录下被测对象的每个功能模块用例编写在单个python脚本中，脚本以test<em>xx.py命名；
+测试用例管理模块：Test</em>case<em>info.py定义了测试用例信息类；测试用例管理通过Testcases.txt来记录测试脚本（test</em>xx.py），如果不需要再本次执行，则在测试脚本前面添加一个“#”标识符来跳过该脚本中用例的执行，例如下图所示：</p>
+
+<pre><code>                    图表 2 测试用例管理文件
+</code></pre>
+
+<p>测试报告生成模式：实现测试报告生成形式等；
+测试用例执行及邮件发送模块：定义RunTests类，类中实现执行用例和发送邮件方法；创建RunTests实例，执行用例并将测试结果发送邮件给指定收件人。最终邮件结果如图所示：</p>
+
+<pre><code>                   图表 3 测试结果邮件反馈图
+</code></pre>
+
+<p>3    框架实现</p>
+
+<p>3.1    工程结构</p>
+
+<pre><code>|-IPC_test----------------------------项目名称
+    |-TestCases/---------测试用例编写目录，保存所有模块测试用例
+        |-test_isp.py-------------------isp功能测试用例
+        |-test_login.py----------------登录功能测试用例
+        |-test_xxx.py -----------------xxx功能测试用例
+    |-IPC_login.py/------------------全局模块
+    |-test_case_info.py-------------测试用例信息类
+    |-test_report.py------------------测试报告生成模块
+    |-testcases.txt--------------------测试用例管理文件
+    |-TestResult.html-----------------执行后生成的结果文件
+|-run.py-------------------------启动脚本，执行用例并发送邮件
+</code></pre>
+
+<p>3.2    代码交流</p>
+
+<p>目前只完成了框架的基本功能，用例只实现了IPC设备的web上登录功能，现以test_login为例，简单介绍下框架各个模块的主要代码。</p>
+
+<p>全局模块：IPC_login.py</p>
+
+<pre><code>图表 4 IPC_login.py
+</code></pre>
+
+<p>定义IPC类，类中初始化实例，并定义login方法。</p>
+
+<p>测试用例编写模块：TestCase/test_login.py</p>
+
+<pre><code>图表 5 TestCase/test_login.py
+</code></pre>
+
+<p>测试用例必须以“test<em>”开始，测试执行时会自动搜索所有以“test</em>”的函数并执行。35行用assertEqual断言进行判断验证测试结果。</p>
+
+<p>测试用例执行和邮件发送模块：run.py</p>
+
+<pre><code>图表 6 run.py
+</code></pre>
+
+<p>定义了LoadAndRunTestCases方法，读取testcases.txt文件中未被“#”注释掉的用例脚本名称，用nosetests逐个执行。</p>
+
+<pre><code>图表 7 run.py
+</code></pre>
+
+<p>定义了邮件发送方法。</p>
+
+<pre><code>图表 8 run.py
+</code></pre>
+
+<p>Main函数中定义了RunTests实例，调用执行测试用例方法，接着调用发送邮件方法。</p>
+
+<p>4    总结</p>
+
+<p>利用空闲时间，实现了一个基于selenium的web端简易自动化测试框架，可实现测试用例有序管理、有序执行，并生成测试结果报告，发送邮件。功能较简单，考虑IPC web端功能的测试并不是系统部测试组的工作重点，暂不做进一步完善和优化。待后续有该方面的需求，再做进一步开发。</p>
+<!-- content end -->
+</div>
+<br>
+<br>
+    <div id="disqus_thread"></div>
+	<div class="footer">
+		<p>© Copyright 2014 by isnowfy, Designed by isnowfy</p>
+	</div>
+</div>
+<script src="main.js"></script>
+<script id="content" type="text/mustache">
+    <h1>{{title}}</h1>
+    <div class="tag">
+    {{date}}
+    {{#tags}}
+    <a href="/#/tag/{{name}}">#{{name}}</a>
+    {{/tags}}
+    </div>
+</script>
+<script id="pagesTemplate" type="text/mustache">
+    {{#pages}}
+    <li>
+        <a href="{{path}}">{{title}}</a>
+    </li>
+    {{/pages}}
+</script>
+<script>
+$(document).ready(function() {
+    $.ajax({
+        url: "main.json",
+        type: "GET",
+        dataType: "json",
+        success: function(data) {
+            $("#title").html(data.name);
+            var pagesTemplate = Hogan.compile($("#pagesTemplate").html());
+            var pagesHtml = pagesTemplate.render({"pages": data.pages});
+            $("#pages").append(pagesHtml);
+            //path
+            var path = "ipc_web.html";
+            //path end
+            var now = 0;
+            for (var i = 0; i < data.posts.length; ++i)
+                if (path == data.posts[i].path)
+                    now = i;
+            var post = data.posts[now];
+            var tmp = post.tags.split(" ");
+            var tags = [];
+            for (var i = 0; i < tmp.length; ++i)
+                if (tmp[i].length > 0)
+                    tags.push({"name": tmp[i]});
+            var contentTemplate = Hogan.compile($("#content").html());
+            var contentHtml = contentTemplate.render({"title": post.title, "tags": tags, "date": post.date});
+            $("#main").prepend(contentHtml);
+            if (data.disqus_shortname.length > 0) {
+                var disqus_shortname = data.disqus_shortname;
+                (function() {
+                    var dsq = document.createElement('script'); dsq.type = 'text/javascript'; dsq.async = true;
+                    dsq.src = '//' + disqus_shortname + '.disqus.com/embed.js';
+                    (document.getElementsByTagName('head')[0] || document.getElementsByTagName('body')[0]).appendChild(dsq);
+                })();
+            }
+        }
+    });
+});
+</script>
+<script src="http://cdn.mathjax.org/mathjax/latest/MathJax.js?config=TeX-AMS-MML_HTMLorMML"></script>
+<script type="text/x-mathjax-config">
+    MathJax.Hub.Config({tex2jax: {inlineMath: [['$','$'], ["\\(", "\\)"]], processEscapes: true}});
+</script>
+</body>
+</html>
