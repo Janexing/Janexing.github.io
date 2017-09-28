@@ -1,0 +1,383 @@
+<!DOCTYPE HTML>
+<html>
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+    <meta name="Keywords" content="blog"/>
+    <meta name="Description" content="blog"/>
+    <title>Simple</title>
+    <link rel="shortcut icon" href="/static/favicon.png"/>
+    <link rel="stylesheet" type="text/css" href="/main.css" />
+</head>
+<body>
+<div class="main">
+    <div class="header">
+    	<ul id="pages">
+            <li><a href="/">home</a></li>
+            <li><a href="/#/tags">tags</a></li>
+            <li><a href="/#/archive">archive</a></li>
+    	</ul>
+    </div>
+	<div class="wrap-header">
+	<h1>
+    <a href="/" id="title"></a>
+	</h1>
+	</div>
+<div id="md" style="display: none;">
+<!-- markdown -->
+##TDD介绍
+###1.1	TDD基本思想
+测试驱动开发（Test-Driven Development，TDD）是通过测试定义所要开发的功能的接口，然后实现功能的开发过程。
+测试驱动开发的基本思想就是在开发功能代码之前，先编写测试代码。也就是说在明确要开发某个功能后，首先思考如何对这个功能进行测试，并完成测试代码的编写，然后编写相关的代码满足这些测试用例。然后循环进行添加其他功能，直到完全部功能的开发。
+###1.2	TDD基本流程
+*	明确当前要完成的功能。可以记录成一个 TODO 列表。    
+*	快速完成针对此功能的测试用例编写。       
+*       测试代码编译不通过。    
+*	编写对应的功能代码。    
+*	测试通过。      
+*	对代码进行重构，并保证测试通过。
+*	循环完成所有功能的开发。
+##2	测试技术　
+###2.1	测试范围、粒度
+
+  *对哪些功能进行测试？*按大师 Kent Benk 的话，对那些你认为应该测试的代码进行测试。那些重要的功能、核心的代码就应该重点测试。
+
+  *什么时候可以停止测试？*测试驱动开发强调测试并不应该是负担，而应该是帮助我们减轻工作量的方法。而对于何时停止编写测试用例，也是应该根据你的经验，功能复杂、核心功能的代码就应该编写更全面、细致的测试用例。测试范围没有静态的标准，同时也应该可以随着时间改变。对于开始没有编写足够的测试的功能代码，随着bug的出现，根据bug补齐相关的测试用例即可。
+
+   小步前进的原则，要求我们对大的功能块测试时，应该先分拆成更小的功能块进行测试，比如一个类A使用了类B、C，就应该编写到A使用B、C功能的测试代码前，完成对B、C的测试和开发。那么是不是每个小类或者小函数都应该测试哪？我认为没有必要。你应该运用你的经验，对那些可能出问题的地方重点测试，感觉不可能出问题的地方就等它真正出问题的时候再补测试吧。
+###2.2	怎么编写测试用例
+   *测试用例的编写应注意以下几点：*
+
+1.	操作过程尽量模拟正常使用的过程。       
+2.    	全面的测试用例应该尽量做到分支覆盖，核心代码尽量做到路径覆盖。      
+3.    测试数据尽量包括：真实数据、边界数据。       
+4.	测试语句和测试数据应该尽量简单，容易理解。       
+5.	为了避免对其他代码过多的依赖，可以实现简单的桩函数或桩类（Mock Object）。    
+6.	 如果内部状态非常复杂或者应该判断流程而不是状态，可以通过记录日志字符串的方式进行验证。
+
+*使用单元测试辅助开发：*
+
+在开发的过程，我们应该有意识的按单元测试的目的来构建我们的函数、类、以及程序集，如果你的函数符合单元测试要求的话，一般都是比较容易重构和维护的。另外，我们开发的过程中，很多时候需要验证某个功能是否可用，使用单元测试，将会很快速的帮你完成这个验证操作。使用单元测试另外一个好处是，我们可以随时针对某个方法进行性能上的测试，发现哪些代码对我们的系统造成了较大的影响。
+##3	TDD流程模拟
+###3.1	需求分析
+####3.1.1	Mediactrl需求分析
+IPC mediactrl 视频部分的功能需求主要如下：
+
+1.	一路视频流采集；
+2.	三路视频流编码；
+3.	三路视频流网传；
+4.	编码方式支持MJPEG、H264；
+5.	支持JPEG图像抓拍；
+6.	90°旋转；
+7.	水平、垂直、中心镜像翻转；
+8.	图像区域遮蔽；
+9.	OSD叠加，包括台标、时间、自定义字幕；
+10. 智能分析方面，移动侦测、遮蔽侦测。 
+
+根据IPC视频部分基于模块化的设计思想，从上述功能需求出发，大致可分为以下几大模块。如图1所示。
+
+![](https://github.com/Janexing/Janexing.github.io/blob/master/images/tdd1.png?raw=true)
+ 
+ 图1 媒控视频部分功能模块
+
+由于媒控视频部分模块较多，功能也较复杂，下面TDD流程模拟只针对OSD模块。
+####3.1.2	OSD模块需求
+功能需求：
+
+1.	视频浏览支持系统时间（systime）显示；
+2.	视频浏览支持台标字幕（caption）显示；
+3.	视频浏览支持告警字幕（alarm）显示；
+4.	字幕位置可随意设置，不超过当前分辨率范围即可；
+5.	修改分辨率字幕位置可进行自适应；
+6.	对于图像翻转、旋转进行适应处理；
+
+需求描述：
+
+1.	支持OSD大小、区域能力获取；
+2.	支持OSD区域刷新：坐标、大小；
+3.	OSD数据格式为bmp图片；
+4.	支持透明度设置；
+
+TDD通过编写测试用例，先考虑代码的使用需求，包括功能、过程、接口等，需保证这些描述是无二义的，可进行验证的。
+###3.2	单元测试验证接口
+根据小步前进的原则，要求我们在对大的功能模块进行测试时，应该拆成更小的功能块进行测试。因此，首先我们根据需求描述，提取出实现基本功能的接口，使用单元测试验证接口，这样在开发的过程中，我们应该有意识地按单元测试的目的来构建我们的函数、类、以及程序集，这样代码通常容易重构和维护。
+
+首先可确定4个接口：
+
+1.     设置某个通道的OSD参数；
+2.	局部更新某个OSD区域上的内容；
+3.	设置某个回显通道的OSD参数；
+4.	局部更新某个回显OSD区域上的内容。
+
+针对上述四个接口，我们可编写单元测试用例，采用gtest单元测试框架：
+ 
+![](https://github.com/Janexing/Janexing.github.io/blob/master/images/tdd2.png?raw=true)
+
+上面用例未进行展开细化，实际项目中测试数据应尽量包括真实数据、边界数据，尽量做到所有分支覆盖。为了避免对其他代码过多的依赖，可以实现简单的桩函数或桩类。如果内部状态非常复杂或者应该判断流程而不是状态，可以通过记录日志字符串的方式进行验证。
+###3.3	测试demo验证功能
+上述单元测试只能验证单个接口各个分支功能，各个功能的实际效果、功能逻辑是否正确，并不能得到保证。因此需要针对各个功能编写测试demo，在单板上进行测试。
+####3.3.1	测试用例编写
+首先编写OSD的测试程序，主要包括基本功能用例、与其它功能直接的逻辑交互用例，大致如下图所示；
+
+ ![](https://github.com/Janexing/Janexing.github.io/blob/master/images/tdd3.png?raw=true)
+####3.3.2	测试脚本编译
+测试脚本编写完成，用平台提供的编译工具，编写编译脚本进行编译。比如编译后的二进制可执行文件为media_test。
+####3.3.3	测试执行
+接着需要搭建测试环境，在单板上进行测试。在项目研发初期，当硬件版本、内核版本已调通，此时便可以在单板上运行媒控组件的测试demo，验证媒控基本功能。
+由于业务模块还未开发完成，媒控功能的效果无法通过登录客户端软件或web上直接查看，因此测试执行需根据具体功能首先进行初始化准备功能，功能效果查看需借助解码工具，比如decorderc.exe。
+
+OSD功能测试，需完成一些前提条件：
+
+1.	媒控初始化工作；
+2.	设置编码网传参数；
+3.	启动网传；
+4.	启动编码；
+
+以上工作可在测试脚本里完成，这样在单板上直接执行可执行文件./media_test，即会正常进行OSD功能的测试。
+测试脚本已启动，此时可打开解码工具，如下图，可设置解码端IP地址，启停网络接收，启停解码。左侧空白处可看到解码后的视频图像，即可看到OSD效果。
+
+![](https://github.com/Janexing/Janexing.github.io/blob/master/images/tdd4.png?raw=true) 
+####3.3.4	小结
+   该章节的功能验证某种程度上可以说是集成测试，将单个接口通过功能逻辑串起来，可保证功能的完整性和正确性。
+###3.4	持续重构
+随着开发进度，小功能的逐步实现和集成，无论是功能代码还是测试代码，对结构不合理，重复的代码等情况，在测试通过后，要持续及时进行重构。
+##4	总结
+本文主要从一个测试者的角度，较为理想化地模拟了IPC产品的媒控组件（mediactrl）TDD流程。因该组件较复杂，主要对其中的OSD功能进行展开分析。
+
+<!-- markdown end -->
+</div>
+<div class="entry" id="main">
+<!-- content -->
+<h2 id="tdd">TDD介绍</h2>
+
+<h3 id="11tdd">1.1    TDD基本思想</h3>
+
+<p>测试驱动开发（Test-Driven Development，TDD）是通过测试定义所要开发的功能的接口，然后实现功能的开发过程。
+测试驱动开发的基本思想就是在开发功能代码之前，先编写测试代码。也就是说在明确要开发某个功能后，首先思考如何对这个功能进行测试，并完成测试代码的编写，然后编写相关的代码满足这些测试用例。然后循环进行添加其他功能，直到完全部功能的开发。</p>
+
+<h3 id="12tdd">1.2    TDD基本流程</h3>
+
+<ul>
+<li>明确当前要完成的功能。可以记录成一个 TODO 列表。    </li>
+<li>快速完成针对此功能的测试用例编写。       </li>
+<li>测试代码编译不通过。    </li>
+<li>编写对应的功能代码。    </li>
+<li>测试通过。      </li>
+<li>对代码进行重构，并保证测试通过。</li>
+<li>循环完成所有功能的开发。</li>
+</ul>
+
+<h2 id="2">2    测试技术　</h2>
+
+<h3 id="21">2.1    测试范围、粒度</h3>
+
+<p><em>对哪些功能进行测试？</em>按大师 Kent Benk 的话，对那些你认为应该测试的代码进行测试。那些重要的功能、核心的代码就应该重点测试。</p>
+
+<p><em>什么时候可以停止测试？</em>测试驱动开发强调测试并不应该是负担，而应该是帮助我们减轻工作量的方法。而对于何时停止编写测试用例，也是应该根据你的经验，功能复杂、核心功能的代码就应该编写更全面、细致的测试用例。测试范围没有静态的标准，同时也应该可以随着时间改变。对于开始没有编写足够的测试的功能代码，随着bug的出现，根据bug补齐相关的测试用例即可。</p>
+
+<p>小步前进的原则，要求我们对大的功能块测试时，应该先分拆成更小的功能块进行测试，比如一个类A使用了类B、C，就应该编写到A使用B、C功能的测试代码前，完成对B、C的测试和开发。那么是不是每个小类或者小函数都应该测试哪？我认为没有必要。你应该运用你的经验，对那些可能出问题的地方重点测试，感觉不可能出问题的地方就等它真正出问题的时候再补测试吧。</p>
+
+<h3 id="22">2.2    怎么编写测试用例</h3>
+
+<p><em>测试用例的编写应注意以下几点：</em></p>
+
+<ol>
+<li>操作过程尽量模拟正常使用的过程。       </li>
+<li>全面的测试用例应该尽量做到分支覆盖，核心代码尽量做到路径覆盖。      </li>
+<li>测试数据尽量包括：真实数据、边界数据。       </li>
+<li>测试语句和测试数据应该尽量简单，容易理解。       </li>
+<li>为了避免对其他代码过多的依赖，可以实现简单的桩函数或桩类（Mock Object）。    </li>
+<li>如果内部状态非常复杂或者应该判断流程而不是状态，可以通过记录日志字符串的方式进行验证。</li>
+</ol>
+
+<p><em>使用单元测试辅助开发：</em></p>
+
+<p>在开发的过程，我们应该有意识的按单元测试的目的来构建我们的函数、类、以及程序集，如果你的函数符合单元测试要求的话，一般都是比较容易重构和维护的。另外，我们开发的过程中，很多时候需要验证某个功能是否可用，使用单元测试，将会很快速的帮你完成这个验证操作。使用单元测试另外一个好处是，我们可以随时针对某个方法进行性能上的测试，发现哪些代码对我们的系统造成了较大的影响。</p>
+
+<h2 id="3tdd">3    TDD流程模拟</h2>
+
+<h3 id="31">3.1    需求分析</h3>
+
+<h4 id="311mediactrl">3.1.1    Mediactrl需求分析</h4>
+
+<p>IPC mediactrl 视频部分的功能需求主要如下：</p>
+
+<ol>
+<li>一路视频流采集；</li>
+<li>三路视频流编码；</li>
+<li>三路视频流网传；</li>
+<li>编码方式支持MJPEG、H264；</li>
+<li>支持JPEG图像抓拍；</li>
+<li>90°旋转；</li>
+<li>水平、垂直、中心镜像翻转；</li>
+<li>图像区域遮蔽；</li>
+<li>OSD叠加，包括台标、时间、自定义字幕；</li>
+<li>智能分析方面，移动侦测、遮蔽侦测。 </li>
+</ol>
+
+<p>根据IPC视频部分基于模块化的设计思想，从上述功能需求出发，大致可分为以下几大模块。如图1所示。</p>
+
+<p><img src="https://github.com/Janexing/Janexing.github.io/blob/master/images/tdd1.png?raw=true" alt="" title=""></p>
+
+<p>图1 媒控视频部分功能模块</p>
+
+<p>由于媒控视频部分模块较多，功能也较复杂，下面TDD流程模拟只针对OSD模块。</p>
+
+<h4 id="312osd">3.1.2    OSD模块需求</h4>
+
+<p>功能需求：</p>
+
+<ol>
+<li>视频浏览支持系统时间（systime）显示；</li>
+<li>视频浏览支持台标字幕（caption）显示；</li>
+<li>视频浏览支持告警字幕（alarm）显示；</li>
+<li>字幕位置可随意设置，不超过当前分辨率范围即可；</li>
+<li>修改分辨率字幕位置可进行自适应；</li>
+<li>对于图像翻转、旋转进行适应处理；</li>
+</ol>
+
+<p>需求描述：</p>
+
+<ol>
+<li>支持OSD大小、区域能力获取；</li>
+<li>支持OSD区域刷新：坐标、大小；</li>
+<li>OSD数据格式为bmp图片；</li>
+<li>支持透明度设置；</li>
+</ol>
+
+<p>TDD通过编写测试用例，先考虑代码的使用需求，包括功能、过程、接口等，需保证这些描述是无二义的，可进行验证的。</p>
+
+<h3 id="32">3.2    单元测试验证接口</h3>
+
+<p>根据小步前进的原则，要求我们在对大的功能模块进行测试时，应该拆成更小的功能块进行测试。因此，首先我们根据需求描述，提取出实现基本功能的接口，使用单元测试验证接口，这样在开发的过程中，我们应该有意识地按单元测试的目的来构建我们的函数、类、以及程序集，这样代码通常容易重构和维护。</p>
+
+<p>首先可确定4个接口：</p>
+
+<ol>
+<li>设置某个通道的OSD参数；</li>
+<li>局部更新某个OSD区域上的内容；</li>
+<li>设置某个回显通道的OSD参数；</li>
+<li>局部更新某个回显OSD区域上的内容。</li>
+</ol>
+
+<p>针对上述四个接口，我们可编写单元测试用例，采用gtest单元测试框架：</p>
+
+<p><img src="https://github.com/Janexing/Janexing.github.io/blob/master/images/tdd2.png?raw=true" alt="" title=""></p>
+
+<p>上面用例未进行展开细化，实际项目中测试数据应尽量包括真实数据、边界数据，尽量做到所有分支覆盖。为了避免对其他代码过多的依赖，可以实现简单的桩函数或桩类。如果内部状态非常复杂或者应该判断流程而不是状态，可以通过记录日志字符串的方式进行验证。</p>
+
+<h3 id="33demo">3.3    测试demo验证功能</h3>
+
+<p>上述单元测试只能验证单个接口各个分支功能，各个功能的实际效果、功能逻辑是否正确，并不能得到保证。因此需要针对各个功能编写测试demo，在单板上进行测试。</p>
+
+<h4 id="331">3.3.1    测试用例编写</h4>
+
+<p>首先编写OSD的测试程序，主要包括基本功能用例、与其它功能直接的逻辑交互用例，大致如下图所示；</p>
+
+<p><img src="https://github.com/Janexing/Janexing.github.io/blob/master/images/tdd3.png?raw=true" alt="" title=""></p>
+
+<h4 id="332">3.3.2    测试脚本编译</h4>
+
+<p>测试脚本编写完成，用平台提供的编译工具，编写编译脚本进行编译。比如编译后的二进制可执行文件为media_test。</p>
+
+<h4 id="333">3.3.3    测试执行</h4>
+
+<p>接着需要搭建测试环境，在单板上进行测试。在项目研发初期，当硬件版本、内核版本已调通，此时便可以在单板上运行媒控组件的测试demo，验证媒控基本功能。
+由于业务模块还未开发完成，媒控功能的效果无法通过登录客户端软件或web上直接查看，因此测试执行需根据具体功能首先进行初始化准备功能，功能效果查看需借助解码工具，比如decorderc.exe。</p>
+
+<p>OSD功能测试，需完成一些前提条件：</p>
+
+<ol>
+<li>媒控初始化工作；</li>
+<li>设置编码网传参数；</li>
+<li>启动网传；</li>
+<li>启动编码；</li>
+</ol>
+
+<p>以上工作可在测试脚本里完成，这样在单板上直接执行可执行文件./media_test，即会正常进行OSD功能的测试。
+测试脚本已启动，此时可打开解码工具，如下图，可设置解码端IP地址，启停网络接收，启停解码。左侧空白处可看到解码后的视频图像，即可看到OSD效果。</p>
+
+<p><img src="https://github.com/Janexing/Janexing.github.io/blob/master/images/tdd4.png?raw=true" alt="" title=""> </p>
+
+<h4 id="334">3.3.4    小结</h4>
+
+<p>该章节的功能验证某种程度上可以说是集成测试，将单个接口通过功能逻辑串起来，可保证功能的完整性和正确性。</p>
+
+<h3 id="34">3.4    持续重构</h3>
+
+<p>随着开发进度，小功能的逐步实现和集成，无论是功能代码还是测试代码，对结构不合理，重复的代码等情况，在测试通过后，要持续及时进行重构。</p>
+
+<h2 id="4">4    总结</h2>
+
+<p>本文主要从一个测试者的角度，较为理想化地模拟了IPC产品的媒控组件（mediactrl）TDD流程。因该组件较复杂，主要对其中的OSD功能进行展开分析。</p>
+<!-- content end -->
+</div>
+<br>
+<br>
+    <div id="disqus_thread"></div>
+	<div class="footer">
+		<p>© Copyright 2014 by isnowfy, Designed by isnowfy</p>
+	</div>
+</div>
+<script src="main.js"></script>
+<script id="content" type="text/mustache">
+    <h1>{{title}}</h1>
+    <div class="tag">
+    {{date}}
+    {{#tags}}
+    <a href="/#/tag/{{name}}">#{{name}}</a>
+    {{/tags}}
+    </div>
+</script>
+<script id="pagesTemplate" type="text/mustache">
+    {{#pages}}
+    <li>
+        <a href="{{path}}">{{title}}</a>
+    </li>
+    {{/pages}}
+</script>
+<script>
+$(document).ready(function() {
+    $.ajax({
+        url: "main.json",
+        type: "GET",
+        dataType: "json",
+        success: function(data) {
+            $("#title").html(data.name);
+            var pagesTemplate = Hogan.compile($("#pagesTemplate").html());
+            var pagesHtml = pagesTemplate.render({"pages": data.pages});
+            $("#pages").append(pagesHtml);
+            //path
+            var path = "tdd.html";
+            //path end
+            var now = 0;
+            for (var i = 0; i < data.posts.length; ++i)
+                if (path == data.posts[i].path)
+                    now = i;
+            var post = data.posts[now];
+            var tmp = post.tags.split(" ");
+            var tags = [];
+            for (var i = 0; i < tmp.length; ++i)
+                if (tmp[i].length > 0)
+                    tags.push({"name": tmp[i]});
+            var contentTemplate = Hogan.compile($("#content").html());
+            var contentHtml = contentTemplate.render({"title": post.title, "tags": tags, "date": post.date});
+            $("#main").prepend(contentHtml);
+            if (data.disqus_shortname.length > 0) {
+                var disqus_shortname = data.disqus_shortname;
+                (function() {
+                    var dsq = document.createElement('script'); dsq.type = 'text/javascript'; dsq.async = true;
+                    dsq.src = '//' + disqus_shortname + '.disqus.com/embed.js';
+                    (document.getElementsByTagName('head')[0] || document.getElementsByTagName('body')[0]).appendChild(dsq);
+                })();
+            }
+        }
+    });
+});
+</script>
+<script src="http://cdn.mathjax.org/mathjax/latest/MathJax.js?config=TeX-AMS-MML_HTMLorMML"></script>
+<script type="text/x-mathjax-config">
+    MathJax.Hub.Config({tex2jax: {inlineMath: [['$','$'], ["\\(", "\\)"]], processEscapes: true}});
+</script>
+</body>
+</html>
