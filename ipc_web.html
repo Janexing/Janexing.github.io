@@ -44,14 +44,16 @@
 unittest是python的一个单元测试模块。一个TestCase的实例是一个测试用例，也就是一个完整的测试流程，通过执行这个测试单元，可以对某一个问题进行验证；多个测试用例集合在一起，就是TestSuite；TestLoader加载TestCase到TestSuite中；TextTestRunner执行测试用例；测试的结果会保存到TextTestResult实例中，包括运行了多少用例，成功了多少，失败了多少。本文开发的框架选用unittest模块进行用例的编写和执行。
 
 2.2	框架介绍
-  
-                        图表 1 简易自动化测试框架
+
+![](https://github.com/Janexing/Janexing.github.io/blob/master/images/ipc1.jpg?raw=true)
+ 
+                  图表 1 简易自动化测试框架
 该自动化测试框架是基于python2.7开发的。主要包括五个模块：
 全局模块：定义IPC类，类中定义全局变量及测试用例执行需要调用的方法函数；
 测试用例编写模块：TestCases目录下被测对象的每个功能模块用例编写在单个python脚本中，脚本以test_xx.py命名；
 测试用例管理模块：Test_case_info.py定义了测试用例信息类；测试用例管理通过Testcases.txt来记录测试脚本（test_xx.py），如果不需要再本次执行，则在测试脚本前面添加一个“#”标识符来跳过该脚本中用例的执行，例如下图所示：
  
-                        图表 2 测试用例管理文件
+                  图表 2 测试用例管理文件
 
 测试报告生成模式：实现测试报告生成形式等；
 测试用例执行及邮件发送模块：定义RunTests类，类中实现执行用例和发送邮件方法；创建RunTests实例，执行用例并将测试结果发送邮件给指定收件人。最终邮件结果如图所示：
@@ -128,7 +130,9 @@ Main函数中定义了RunTests实例，调用执行测试用例方法，接着�
 
 <p>2.2    框架介绍</p>
 
-<pre><code>                    图表 1 简易自动化测试框架
+<p><img src="https://github.com/Janexing/Janexing.github.io/blob/master/images/ipc1.jpg?raw=true" alt="" title=""></p>
+
+<pre><code>              图表 1 简易自动化测试框架
 </code></pre>
 
 <p>该自动化测试框架是基于python2.7开发的。主要包括五个模块：
@@ -136,7 +140,7 @@ Main函数中定义了RunTests实例，调用执行测试用例方法，接着�
 测试用例编写模块：TestCases目录下被测对象的每个功能模块用例编写在单个python脚本中，脚本以test<em>xx.py命名；
 测试用例管理模块：Test</em>case<em>info.py定义了测试用例信息类；测试用例管理通过Testcases.txt来记录测试脚本（test</em>xx.py），如果不需要再本次执行，则在测试脚本前面添加一个“#”标识符来跳过该脚本中用例的执行，例如下图所示：</p>
 
-<pre><code>                    图表 2 测试用例管理文件
+<pre><code>              图表 2 测试用例管理文件
 </code></pre>
 
 <p>测试报告生成模式：实现测试报告生成形式等；
