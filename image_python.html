@@ -143,29 +143,51 @@ img = cv2.merge((b, g, r))
 PIL(Python Imaging Library Python,图像处理类库)提供了通用的图像处理功能,以及大量有用的基本图像操作,比如图像缩放、裁剪、旋转、颜色转换等。利用 PIL 中的函数,我们可以从大多数图像格式的文件中读取数据,然后写入最常见的图像格式文件中。PIL 中最重要的模块为 Image 。
 引入PIL:  from PIL import Image
 ###4.1	 读取、显示、保存
+~~~~{python}
 im=Image.open('/home/Picture/test.jpg')
 im.show()
 im.save("save.gif","GIF") #保存图像为gif格式
+~~~~
+
 ###4.2	创建新图片
 Image.new(mode,size)
 Image.new(mode,size,color)
-例子：newImg = Image.new("RGBA",(640,480),(0,255,0))
+
+例子：
+~~~~{python}
+newImg = Image.new("RGBA",(640,480),(0,255,0))
 newImg.save("newImg.png","PNG")
+~~~~
+
 ###4.3	两张图片相加
+~~~~{python}
 Image.blend(img1,img2,alpha) # 这里alpha表示img1和img2的比例参数
+~~~~
+
 ###4.4	点操作
-im.point(function) #,这个function接受一个参数，且对图片中的每一个点执行这个函数
-比如：out=im.point(lambdai:i*1.5)#对每个点进行50%的加强
+im.point(function) #,这个function接受一个参数，且对图片中的每一个点执行这个函数。比如：
+~~~~{python}
+out=im.point(lambdai:i*1.5)#对每个点进行50%的加强
+~~~~
+
 ###4.5	查看图像信息
 im.format, im.size, im.mode
 ###4.6	图片裁剪
-box=(100,100,500,500)
-设置要裁剪的区域
+~~~~{python}
+box=(100,100,500,500) #设置要裁剪的区域
 region=im.crop(box) #此时，region是一个新的图像对象。
+~~~~
+
 ###4.7	图像黏贴（合并）
+~~~~{python}
 im.paste(region,box)#粘贴box大小的region到原先的图片对象中。
+~~~~
+
 ###4.8	通道分离
+~~~~{python}
 r,g,b=im.split()#分割成三个通道，此时r,g,b分别为三个图像对象。
+~~~~
+
 ###4.9	通道合并
 im=Image.merge("RGB",(b,g,r))#将b,r两个通道进行翻转。
 ###4.10	改变图像的大小
@@ -358,25 +380,33 @@ img <span class="token operator">=</span> cv2<span class="token punctuation">.</
 
 <h3 id="41">4.1     读取、显示、保存</h3>
 
-<p>im=Image.open('/home/Picture/test.jpg')
-im.show()
-im.save("save.gif","GIF") #保存图像为gif格式</p>
+<pre class=" language-python"><code class=" language-python">im<span class="token operator">=</span>Image<span class="token punctuation">.</span>open<span class="token punctuation">(</span><span class="token string">'/home/Picture/test.jpg'</span><span class="token punctuation">)</span>
+im<span class="token punctuation">.</span>show<span class="token punctuation">(</span><span class="token punctuation">)</span>
+im<span class="token punctuation">.</span>save<span class="token punctuation">(</span><span class="token string">"save.gif"</span><span class="token punctuation">,</span><span class="token string">"GIF"</span><span class="token punctuation">)</span> <span class="token comment" spellcheck="true">#保存图像为gif格式
+</span></code></pre>
 
 <h3 id="42">4.2    创建新图片</h3>
 
 <p>Image.new(mode,size)
-Image.new(mode,size,color)
-例子：newImg = Image.new("RGBA",(640,480),(0,255,0))
-newImg.save("newImg.png","PNG")</p>
+Image.new(mode,size,color)</p>
+
+<p>例子：</p>
+
+<pre class=" language-python"><code class=" language-python">newImg <span class="token operator">=</span> Image<span class="token punctuation">.</span>new<span class="token punctuation">(</span><span class="token string">"RGBA"</span><span class="token punctuation">,</span><span class="token punctuation">(</span><span class="token number">640</span><span class="token punctuation">,</span><span class="token number">480</span><span class="token punctuation">)</span><span class="token punctuation">,</span><span class="token punctuation">(</span><span class="token number">0</span><span class="token punctuation">,</span><span class="token number">255</span><span class="token punctuation">,</span><span class="token number">0</span><span class="token punctuation">)</span><span class="token punctuation">)</span>
+newImg<span class="token punctuation">.</span>save<span class="token punctuation">(</span><span class="token string">"newImg.png"</span><span class="token punctuation">,</span><span class="token string">"PNG"</span><span class="token punctuation">)</span>
+</code></pre>
 
 <h3 id="43">4.3    两张图片相加</h3>
 
-<p>Image.blend(img1,img2,alpha) # 这里alpha表示img1和img2的比例参数</p>
+<pre class=" language-python"><code class=" language-python">Image<span class="token punctuation">.</span>blend<span class="token punctuation">(</span>img1<span class="token punctuation">,</span>img2<span class="token punctuation">,</span>alpha<span class="token punctuation">)</span> <span class="token comment" spellcheck="true"># 这里alpha表示img1和img2的比例参数
+</span></code></pre>
 
 <h3 id="44">4.4    点操作</h3>
 
-<p>im.point(function) #,这个function接受一个参数，且对图片中的每一个点执行这个函数
-比如：out=im.point(lambdai:i*1.5)#对每个点进行50%的加强</p>
+<p>im.point(function) #,这个function接受一个参数，且对图片中的每一个点执行这个函数。比如：</p>
+
+<pre class=" language-python"><code class=" language-python">out<span class="token operator">=</span>im<span class="token punctuation">.</span>point<span class="token punctuation">(</span>lambdai<span class="token punctuation">:</span>i<span class="token operator">*</span><span class="token number">1.5</span><span class="token punctuation">)</span><span class="token comment" spellcheck="true">#对每个点进行50%的加强
+</span></code></pre>
 
 <h3 id="45">4.5    查看图像信息</h3>
 
@@ -384,17 +414,19 @@ newImg.save("newImg.png","PNG")</p>
 
 <h3 id="46">4.6    图片裁剪</h3>
 
-<p>box=(100,100,500,500)
-设置要裁剪的区域
-region=im.crop(box) #此时，region是一个新的图像对象。</p>
+<pre class=" language-python"><code class=" language-python">box<span class="token operator">=</span><span class="token punctuation">(</span><span class="token number">100</span><span class="token punctuation">,</span><span class="token number">100</span><span class="token punctuation">,</span><span class="token number">500</span><span class="token punctuation">,</span><span class="token number">500</span><span class="token punctuation">)</span> <span class="token comment" spellcheck="true">#设置要裁剪的区域
+</span>region<span class="token operator">=</span>im<span class="token punctuation">.</span>crop<span class="token punctuation">(</span>box<span class="token punctuation">)</span> <span class="token comment" spellcheck="true">#此时，region是一个新的图像对象。
+</span></code></pre>
 
 <h3 id="47">4.7    图像黏贴（合并）</h3>
 
-<p>im.paste(region,box)#粘贴box大小的region到原先的图片对象中。</p>
+<pre class=" language-python"><code class=" language-python">im<span class="token punctuation">.</span>paste<span class="token punctuation">(</span>region<span class="token punctuation">,</span>box<span class="token punctuation">)</span><span class="token comment" spellcheck="true">#粘贴box大小的region到原先的图片对象中。
+</span></code></pre>
 
 <h3 id="48">4.8    通道分离</h3>
 
-<p>r,g,b=im.split()#分割成三个通道，此时r,g,b分别为三个图像对象。</p>
+<pre class=" language-python"><code class=" language-python">r<span class="token punctuation">,</span>g<span class="token punctuation">,</span><span class="token number">b</span><span class="token operator">=</span>im<span class="token punctuation">.</span>split<span class="token punctuation">(</span><span class="token punctuation">)</span><span class="token comment" spellcheck="true">#分割成三个通道，此时r,g,b分别为三个图像对象。
+</span></code></pre>
 
 <h3 id="49">4.9    通道合并</h3>
 
